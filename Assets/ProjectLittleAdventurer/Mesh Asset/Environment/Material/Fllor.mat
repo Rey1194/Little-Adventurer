@@ -1,21 +1,38 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8138614094752912530
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Fllor
   m_Shader: {fileID: -6465566751694194690, guid: 34fea63f7f52e7c44b88f9f86d411502, type: 3}
-  m_ShaderKeywords: 
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -57,6 +74,8 @@ Material:
     - Vector1_34f510a3a73e467bbb7a69166e2cdf73: 11.36
     - Vector1_7ca0cd911ba644b5ae5ed51ea1fc5736: 2.32
     - Vector1_b4d0ad512ea5436896f5d81d955c7838: 0.5
+    - _QueueControl: 0
+    - _QueueOffset: 0
     m_Colors:
     - Color_184bf34f949e49a4818fb9d77cca03d4: {r: 0, g: 0, b: 0, a: 1}
     - Color_601a031a9f68486ba231fe7d171332b6: {r: 1, g: 1, b: 1, a: 1}
