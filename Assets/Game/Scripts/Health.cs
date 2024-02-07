@@ -15,14 +15,16 @@ public class Health : MonoBehaviour
         _cc = GetComponent<Character>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     public void ApplyDamage(float damage) {
         currentHealth -= damage;
         Debug.Log(gameObject.name + "took Damage" + damage);
         Debug.Log(gameObject.name + "current health" + currentHealth);
+        CheckHealth();
+    }
+    
+    public void CheckHealth() {
+        if (currentHealth <= 0){
+            _cc.SwitchStateTo(Character.CharacterState.dead);
+        }
     }
 }

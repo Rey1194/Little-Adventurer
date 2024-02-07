@@ -6,6 +6,7 @@ using UnityEngine.VFX;
 public class PlayerVFXManager : MonoBehaviour
 {
     public VisualEffect Player_FootStep;
+    public VisualEffect slashVFX;
     public ParticleSystem Blade01;
     
     public void Update_FootStep(bool state) {
@@ -19,5 +20,10 @@ public class PlayerVFXManager : MonoBehaviour
     
     public void PlayBlade01() {
         Blade01.Play();
+    }
+    
+    public void PlaySlash(Vector3 pos) {
+        slashVFX.transform.position = pos;
+        slashVFX.Play();
     }
 }

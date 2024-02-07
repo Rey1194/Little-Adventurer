@@ -106,7 +106,7 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.54757
+      - time: 0.5662267
         functionName: DisableDamageCaster
         data: 
         objectReferenceParameter: {instanceID: 0}
