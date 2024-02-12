@@ -15,6 +15,7 @@ public class Character : MonoBehaviour
     private SkinnedMeshRenderer _skinnedMeshRenderer;
     // Player Variables
     private float verticalVelocity;
+    private float attackAnimationDuration;
     private Vector3 impactOnCharacter;
     public float moveSpeed = 5f;
     public float gravity;
@@ -104,8 +105,21 @@ public class Character : MonoBehaviour
         case CharacterState.Attaking:
             Debug.Log("is Attacking");
             // slide when attacking
-            if (isPlayer){
-                //_moveVelocity = Vector3.zero;
+            if (isPlayer) {
+                
+                if (_playerInput.mouseButtonDown && _cc.isGrounded) {
+                    string currentClipName = _animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
+                    attackAnimationDuration = _animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+                    
+                    // variable con el nombre de la tercera animación del ataque
+                    string attackAnimation03 = "LittleAdventurerAndie_ATTACK_03";
+                    if (currentClipName != attackAnimation03 && attackAnimationDuration > 0.5f && attackAnimationDuration < 0.7f) {
+                        _playerInput.mouseButtonDown = false;
+                        SwitchStateTo(CharacterState.Attaking);
+                        CalculatePlayerMovement();
+                    }
+                }
+                
                 if( Time.time < attackStartTime + attackSlideDuration ) {
                     float passedTime = Time.time - attackStartTime;
                     float lerpTime = passedTime / attackSlideDuration;
@@ -148,6 +162,9 @@ public class Character : MonoBehaviour
             case CharacterState.Attaking:
                 if (_damageCaster != null){
                     DisableDamageCaster();
+                }
+                if (isPlayer) {
+                    GetComponent<PlayerVFXManager>().StopBlade();
                 }
                 break;
             case CharacterState.dead:
