@@ -20,6 +20,7 @@ public class Character : MonoBehaviour
     public float gravity;
     public bool isInvincible;
     public float invincibleDuration = 2f;
+    public int totalCoins;
     // Enemy variables
     public bool isPlayer = true;
     private UnityEngine.AI.NavMeshAgent _navMeshAgent;
@@ -185,11 +186,11 @@ public class Character : MonoBehaviour
         currentState = newState;
         Debug.Log("switched to: " + currentState);
     }
-    
+    // función llamada en la animación
     public void AttackAnimationEnds() {
         SwitchStateTo(CharacterState.Normal);
     }
-    
+    // función llamada en la animación
     public void BeingHitAnimationEnds(){
         SwitchStateTo(CharacterState.Normal);
     }
@@ -207,7 +208,7 @@ public class Character : MonoBehaviour
             GetComponent<EnemyVFXManager>().PlayBeingHitVFX(attackerPos);
         }
         
-        StartCoroutine(MaterialBlink());
+        StartCoroutine(MaterialBlink()); 
         
         if (isPlayer) {
             SwitchStateTo(CharacterState.beingHit);
@@ -215,6 +216,7 @@ public class Character : MonoBehaviour
         }
     }
     
+    // desliza al jugador hacia atrás cuando es golpeado
     public void AddImpact(Vector3 attackerPos, float force) {
         Vector3 impactDir = transform.position - attackerPos;
         impactDir.Normalize();
@@ -233,6 +235,26 @@ public class Character : MonoBehaviour
     public void DropItem(){
         if (itemToDrop != null) {
             Instantiate(itemToDrop, transform.position, Quaternion.identity);
+        }
+    }
+    
+    public void AddHealth(int health) {
+        _health.AddHealth(health);
+        GetComponent<PlayerVFXManager>().HealVFX();
+    }
+    
+    public void AddCoin(int coin) {
+        totalCoins += coin;
+    }
+    
+    public void PickUpItem (PickUpType item){
+        switch (item.type){
+        case PickUpType.PickUp.heal:
+            AddHealth(item.value);
+            break;
+        case PickUpType.PickUp.coin:
+            AddCoin(item.value);
+            break;
         }
     }
     

@@ -27,4 +27,11 @@ public class Health : MonoBehaviour
             _cc.SwitchStateTo(Character.CharacterState.dead);
         }
     }
+    
+    public void AddHealth (int healh) {
+        currentHealth += healh;
+        if (currentHealth > maxHealth) {
+            currentHealth = maxHealth;
+        }
+    }
 }

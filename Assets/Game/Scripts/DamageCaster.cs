@@ -37,12 +37,12 @@ public class DamageCaster : MonoBehaviour
             _damageTargetList.Add(other);
         }
     }
-    
+    // función llamada en la animación de ataque
     public void EnableDamageCaster() {
         _damageTargetList.Clear();
         _damageCasterCollider.enabled = true;
     }
-    
+    // función llamada en la animación de ataque
     public void DisableDamageCaster() {
         _damageTargetList.Clear();
         _damageCasterCollider.enabled = false;
