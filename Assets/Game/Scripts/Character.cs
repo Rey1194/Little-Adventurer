@@ -14,13 +14,14 @@ public class Character : MonoBehaviour
     private MaterialPropertyBlock _materialPropertyBlock;
     private SkinnedMeshRenderer _skinnedMeshRenderer;
     // Player Variables
+    private Vector3 impactOnCharacter;
     private float verticalVelocity;
     private float attackAnimationDuration;
-    private Vector3 impactOnCharacter;
     public float moveSpeed = 5f;
+    public float slideSpeed = 9f;
     public float gravity;
-    public bool isInvincible;
     public float invincibleDuration = 2f;
+    public bool isInvincible;
     public int totalCoins;
     // Enemy variables
     public bool isPlayer = true;
@@ -33,6 +34,7 @@ public class Character : MonoBehaviour
         Attaking,
         dead,
         beingHit,
+        slide,
     }
     public CharacterState currentState;
     // Player slide
@@ -64,6 +66,11 @@ public class Character : MonoBehaviour
             SwitchStateTo(CharacterState.Attaking);
             return; // evitar que se ejecute las siguientes líneas de código
         }
+        else if (_playerInput.spaceKeyDown && _cc.isGrounded) {
+            SwitchStateTo(CharacterState.slide);
+            return;
+        }
+        // movement
         _moveVelocity.Set(_playerInput.horizontalInput, 0, _playerInput.verticalInput);
         _moveVelocity.Normalize();
         _moveVelocity = Quaternion.Euler(0, -45f, 0) * _moveVelocity;
@@ -103,8 +110,7 @@ public class Character : MonoBehaviour
             }
             break;
         case CharacterState.Attaking:
-            Debug.Log("is Attacking");
-            // slide when attacking
+            // attack animation
             if (isPlayer) {
                 
                 if (_playerInput.mouseButtonDown && _cc.isGrounded) {
@@ -119,7 +125,7 @@ public class Character : MonoBehaviour
                         CalculatePlayerMovement();
                     }
                 }
-                
+                // slide when is attacking
                 if( Time.time < attackStartTime + attackSlideDuration ) {
                     float passedTime = Time.time - attackStartTime;
                     float lerpTime = passedTime / attackSlideDuration;
@@ -135,6 +141,10 @@ public class Character : MonoBehaviour
                 impactOnCharacter = Vector3.Lerp(impactOnCharacter, Vector3.zero, Time.deltaTime * 5);
             }
             break;
+        case CharacterState.slide:
+            // Slide velocity
+            _moveVelocity = transform.forward * slideSpeed * Time.deltaTime;
+            break;
         }
         // gravity
         if (isPlayer) {
@@ -142,7 +152,7 @@ public class Character : MonoBehaviour
                 verticalVelocity = gravity;
             }
             else {
-                verticalVelocity = gravity *0.3f;
+                verticalVelocity = gravity * 0.3f;
             }
             _moveVelocity += verticalVelocity * Vector3.up * Time.deltaTime;
             _cc.Move(_moveVelocity);
@@ -153,7 +163,7 @@ public class Character : MonoBehaviour
     public void SwitchStateTo( CharacterState newState ) {
         // clear input cache
         if (isPlayer) {
-            _playerInput.mouseButtonDown = false;
+            _playerInput.ClearCache();
         }
         // exiting State
         switch(currentState){
@@ -170,6 +180,8 @@ public class Character : MonoBehaviour
             case CharacterState.dead:
                 return;
             case CharacterState.beingHit:
+                break;
+            case CharacterState.slide:
                 break;
         }
         // entering state
@@ -199,15 +211,22 @@ public class Character : MonoBehaviour
                     StartCoroutine(DelayCancelInvincible());
                 }
                 break;
+            case CharacterState.slide:
+                _animator.SetTrigger("Slide");
+                break;
         }
         currentState = newState;
         Debug.Log("switched to: " + currentState);
     }
-    // función llamada en la animación
+    // función llamada en la animación attack
     public void AttackAnimationEnds() {
         SwitchStateTo(CharacterState.Normal);
     }
-    // función llamada en la animación
+    // función llamada en la animación roll
+    public void SlideAnimationEnds() {
+        SwitchStateTo(CharacterState.Normal);
+    }
+    // función llamada en la animación hit
     public void BeingHitAnimationEnds(){
         SwitchStateTo(CharacterState.Normal);
     }
