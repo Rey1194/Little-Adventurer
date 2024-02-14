@@ -25,9 +25,11 @@ public class Character : MonoBehaviour
     public int totalCoins;
     // Enemy variables
     public bool isPlayer = true;
+    public GameObject itemToDrop;
+    private float spawnDuration = 2f;
+    private float currentSpawntime;
     private UnityEngine.AI.NavMeshAgent _navMeshAgent;
     private Transform targetPlayer;
-    public GameObject itemToDrop;
     // state machine
     public enum CharacterState {
         Normal, 
@@ -35,6 +37,7 @@ public class Character : MonoBehaviour
         dead,
         beingHit,
         slide,
+        spawn
     }
     public CharacterState currentState;
     // Player slide
@@ -44,14 +47,6 @@ public class Character : MonoBehaviour
     
     // Awake is called when the script instance is being loaded.
     protected void Awake() {
-        if (!isPlayer){
-            _navMeshAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-            targetPlayer = GameObject.FindWithTag("Player").transform;
-            _navMeshAgent.speed = moveSpeed;
-        }
-        else{
-            _playerInput = GetComponent<PlayerInput>();
-        }
         _cc = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
         _health = GetComponent<Health>();
@@ -59,6 +54,16 @@ public class Character : MonoBehaviour
         _materialPropertyBlock = new MaterialPropertyBlock();
         _skinnedMeshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
         _skinnedMeshRenderer.GetPropertyBlock(_materialPropertyBlock);
+        
+        if (!isPlayer){
+            _navMeshAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+            targetPlayer = GameObject.FindWithTag("Player").transform;
+            _navMeshAgent.speed = moveSpeed;
+            SwitchStateTo(CharacterState.spawn);
+        }
+        else{
+            _playerInput = GetComponent<PlayerInput>();
+        }
     }
 
     private void CalculatePlayerMovement() {
@@ -145,6 +150,12 @@ public class Character : MonoBehaviour
             // Slide velocity
             _moveVelocity = transform.forward * slideSpeed * Time.deltaTime;
             break;
+        case CharacterState.spawn:
+            currentSpawntime -= Time.deltaTime;
+            if (currentSpawntime <= 0) {
+                SwitchStateTo(CharacterState.Normal);
+            }
+            break;
         }
         // gravity
         if (isPlayer) {
@@ -183,6 +194,9 @@ public class Character : MonoBehaviour
                 break;
             case CharacterState.slide:
                 break;
+            case CharacterState.spawn:
+                isInvincible = false;
+                break;
         }
         // entering state
         switch(newState){
@@ -213,6 +227,11 @@ public class Character : MonoBehaviour
                 break;
             case CharacterState.slide:
                 _animator.SetTrigger("Slide");
+                break;
+            case CharacterState.spawn:
+                isInvincible = true;
+                currentSpawntime = spawnDuration;
+                StartCoroutine(MaterialAppear());
                 break;
         }
         currentState = newState;
@@ -294,6 +313,12 @@ public class Character : MonoBehaviour
         }
     }
     
+    public void RotateToTarget() {
+        if (currentState != CharacterState.dead) {
+            transform.LookAt(targetPlayer, Vector3.up);
+        }
+    }
+    
     IEnumerator DelayCancelInvincible(){
         yield return new WaitForSeconds(invincibleDuration);
         isInvincible = false;
@@ -321,12 +346,34 @@ public class Character : MonoBehaviour
         _skinnedMeshRenderer.SetPropertyBlock(_materialPropertyBlock);
         
         while (currentDissolveTime < dissolveTimeDuration) {
-            
             currentDissolveTime += Time.deltaTime;
             dissolveHigh = Mathf.Lerp(dissolveHigh_start, dissolveHigh_target, currentDissolveTime / dissolveTimeDuration);
             _materialPropertyBlock.SetFloat("_dissolve_height", dissolveHigh);
             _skinnedMeshRenderer.SetPropertyBlock(_materialPropertyBlock);
             yield return null;
         }
+    }
+    
+    IEnumerator MaterialAppear() {
+        // VFX variables
+        float dissolveTimeDuration = spawnDuration;
+        float currentDissolveTime = 0;
+        float dissolveHigh_start = -10f;
+        float dissolveHigh_target  = 20f;
+        float dissolveHigh;
+        
+        _materialPropertyBlock.SetFloat("_enableDissolve", 1f);
+        _skinnedMeshRenderer.SetPropertyBlock(_materialPropertyBlock);
+        
+        while (currentDissolveTime < dissolveTimeDuration) {
+            currentDissolveTime += Time.deltaTime;
+            dissolveHigh = Mathf.Lerp(dissolveHigh_start, dissolveHigh_target, currentDissolveTime / dissolveTimeDuration);
+            _materialPropertyBlock.SetFloat("_dissolve_height", dissolveHigh);
+            _skinnedMeshRenderer.SetPropertyBlock(_materialPropertyBlock);
+            yield return null;
+        }
+        
+        _materialPropertyBlock.SetFloat("_enableDissolve", 0f);
+        _skinnedMeshRenderer.SetPropertyBlock(_materialPropertyBlock);
     }
 }
