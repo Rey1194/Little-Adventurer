@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public Character playerCharacter;
+    public GameUI_Manager UIManager;
     private bool gameIsOver;
     
     // Start is called before the first frame update
@@ -14,11 +16,11 @@ public class GameManager : MonoBehaviour
     }
     
     public void GameOver() {
-        Debug.LogWarning("Game Over");
+        UIManager.ShowGameOverUI();
     }
     
     public void GameIsFinished() {
-        Debug.Log("Game is Finished");
+        UIManager.ShowGameFinishedUI();
     }
 
     // Update is called once per frame
@@ -32,7 +34,22 @@ public class GameManager : MonoBehaviour
             gameIsOver = true;
             GameOver();
         }
+        
+        if ( Input.GetKeyDown(KeyCode.Escape) ) {
+            UIManager.TogglePauseUI();
+        }
 
+    }
+    
+    public void Restart() {
+        // reinicia la escena
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    
+    public void ReturnMainMenu() {
+        // regresa al menú principal
+        Time.timeScale = 1;
+        SceneManager.LoadScene("MainMenu");
     }
     
 }

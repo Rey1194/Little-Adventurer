@@ -5,9 +5,14 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
     // Variables
-    public float currentHealth;
-    public float maxHealth;
     private Character _cc;
+    public float maxHealth;
+    public float currentHealth;
+    public float currentHealthPercentage {
+        get {
+            return (float)currentHealth / (float) maxHealth;
+        }
+    }
     
     // Awake is called when the script instance is being loaded.
     protected void Awake() {
