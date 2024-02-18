@@ -216,6 +216,8 @@ public class Character : MonoBehaviour
                 }
                 _animator.SetTrigger("Attack");
                 if (isPlayer){
+                    // play SFX
+                    SFXManager.instance.PlayAudio(0);
                     attackStartTime =Time.time;
                     RotateToCursor(); // rotar hacia donde está el cursor al momento de atacar
                 }
@@ -226,12 +228,15 @@ public class Character : MonoBehaviour
                 StartCoroutine(MaterialDissolve());
                 DropItem();
                 if (!isPlayer) {
+                    // play dead sfx
+                    SFXManager.instance.PlayAudio(1);
                     SkinnedMeshRenderer mesh = GetComponentInChildren<SkinnedMeshRenderer>();
                     mesh.gameObject.layer = 0;  // así se soluciona el error de que se mostraba la sombra del mesh del enemigo
                 }
                 break;
             case CharacterState.beingHit:
                 _animator.SetTrigger("beingHit");
+                SFXManager.instance.PlayAudio(4);
                 if(isPlayer){
                     isInvincible = true;
                     StartCoroutine(DelayCancelInvincible());
@@ -243,6 +248,7 @@ public class Character : MonoBehaviour
             case CharacterState.spawn:
                 isInvincible = true;
                 currentSpawntime = spawnDuration;
+                SFXManager.instance.PlayAudio(6);
                 StartCoroutine(MaterialAppear());
                 break;
         }

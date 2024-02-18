@@ -16,6 +16,8 @@ public class EnemyVFXManager : MonoBehaviour
     
     public void PlayAttackVFX() {
         Enemy_Smash.SendEvent("OnPlay");
+        // play sfx
+        SFXManager.instance.PlayAudio(3);
     }
     
     public void PlayBeingHitVFX (Vector3 attackerPos) {

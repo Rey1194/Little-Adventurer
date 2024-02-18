@@ -22,7 +22,8 @@ public class DamageCaster : MonoBehaviour
             Character targetCC = other.GetComponent<Character>();
             if (targetCC != null) {
                 targetCC.ApplyDamage(damage, transform.parent.position);
-                
+                // llamar al sfx
+                SFXManager.instance.PlayAudio(4);
                 // instanciar el VFX en el punto de colisión contra el enemigo
                 PlayerVFXManager playerVFXManager = transform.parent.GetComponent<PlayerVFXManager>();
                 if (playerVFXManager != null) {

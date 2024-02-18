@@ -15,6 +15,8 @@ public class Gate : MonoBehaviour
     }
     
     IEnumerator OpenGateAnimation() {
+        yield return new WaitForSeconds(2f);
+        SFXManager.instance.PlayAudio(5);
         float currentOpenDuration = 0;
         Vector3 startPos = gateVisual.transform.position;
         Vector3 targetPos = startPos + Vector3.up * openTargetY;

@@ -20,5 +20,7 @@ public class ShootDamageOrb : MonoBehaviour
     
     public void ShootTheDamageOrb() {
         Instantiate(damageOrb, shootingPoint.transform.position, Quaternion.LookRotation(shootingPoint.forward));
+        // play SFX
+        SFXManager.instance.PlayAudio(7);
     }
 }

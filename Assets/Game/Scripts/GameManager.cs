@@ -7,12 +7,17 @@ public class GameManager : MonoBehaviour
 {
     public Character playerCharacter;
     public GameUI_Manager UIManager;
+    private ButtonSound buttonSFX;
     private bool gameIsOver;
     
     // Start is called before the first frame update
-    void awake()
-    {
+    void awake() {
         playerCharacter = GameObject.FindWithTag("Player").GetComponent<Character>();
+    }
+    
+    // Start is called on the frame when a script is enabled just before any of the Update methods is called the first time.
+    protected void Start() {
+        buttonSFX = GameObject.FindGameObjectWithTag("SFXManager").GetComponent<ButtonSound>();
     }
     
     public void GameOver() {
@@ -36,6 +41,8 @@ public class GameManager : MonoBehaviour
         }
         
         if ( Input.GetKeyDown(KeyCode.Escape) ) {
+            // play sfx button
+            buttonSFX.PlayButtonSound();
             UIManager.TogglePauseUI();
         }
 

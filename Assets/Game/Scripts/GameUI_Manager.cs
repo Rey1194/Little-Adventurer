@@ -22,6 +22,8 @@ public class GameUI_Manager : MonoBehaviour
     public Button GameFinished_Button_Restart;
     public Button GameFinished_Button_MainMenu;
     public Button[] buttons;
+    // SFX
+    private ButtonSound buttonSFX;
     // state machine
     public enum GameUI_State {
         GamePlay,
@@ -33,7 +35,11 @@ public class GameUI_Manager : MonoBehaviour
     
     // Start is called before the first frame update
     void Start() {
+        
         SwitchUIState(GameUI_State.GamePlay);
+        // encontrar en la escena al SFX Manager
+        buttonSFX = GameObject.FindGameObjectWithTag("SFXManager").GetComponent<ButtonSound>();
+        
         // manejo de los botones en el UI
         foreach (Button button in buttons)
         {
@@ -52,15 +58,19 @@ public class GameUI_Manager : MonoBehaviour
     
     void ButtonClicked(Button clickedButton)
     {
+        
         if (clickedButton == Pause_Button_Restart || clickedButton == GameOver_Button_Restart || clickedButton == GameFinished_Button_Restart)
         {
+            buttonSFX.PlayButtonSound();
             GM.Restart();
         }
         else if (clickedButton == Pause_Button_MainMenu || clickedButton == GameOver_Button_MainMenu || clickedButton == GameFinished_Button_MainMenu)
         {
+            buttonSFX.PlayButtonSound();
             GM.ReturnMainMenu();
         }
         else if (clickedButton == Pause_Button_Resume) {
+            buttonSFX.PlayButtonSound();
             SwitchUIState(GameUI_State.GamePlay);
         }
     }
