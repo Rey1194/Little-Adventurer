@@ -93,7 +93,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
-  value: 10
+  value: 5
   collectedVFX: {fileID: 2620696320687690017, guid: 7cfced41b772d4a45aca452ccaca00d9, type: 3}
 --- !u!135 &8405460234301779382
 SphereCollider:

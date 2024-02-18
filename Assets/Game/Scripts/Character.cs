@@ -90,7 +90,7 @@ public class Character : MonoBehaviour
         _animator.SetBool("AirBorne", !_cc.isGrounded);
     }
     
-    private void CalculateEnemyMovement(){
+    private void CalculateEnemyMovement() {
         if ( Vector3.Distance(targetPlayer.position, transform.position) >= _navMeshAgent.stoppingDistance ) {
             _navMeshAgent.SetDestination(targetPlayer.position);
             _animator.SetFloat("Speed", 0.2f);
@@ -121,13 +121,12 @@ public class Character : MonoBehaviour
                 if (_playerInput.mouseButtonDown && _cc.isGrounded) {
                     string currentClipName = _animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
                     attackAnimationDuration = _animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
-                    
                     // variable con el nombre de la tercera animación del ataque
                     string attackAnimation03 = "LittleAdventurerAndie_ATTACK_03";
                     if (currentClipName != attackAnimation03 && attackAnimationDuration > 0.5f && attackAnimationDuration < 0.7f) {
                         _playerInput.mouseButtonDown = false;
                         SwitchStateTo(CharacterState.Attaking);
-                        CalculatePlayerMovement();
+                        //CalculatePlayerMovement(); se elimina para evitar conflicto con el LookRotation
                     }
                 }
                 // slide when is attacking
@@ -141,10 +140,6 @@ public class Character : MonoBehaviour
         case CharacterState.dead:
             return;
         case CharacterState.beingHit:
-            if (impactOnCharacter.magnitude > 0.2f){
-                _moveVelocity = impactOnCharacter * Time.deltaTime;
-                impactOnCharacter = Vector3.Lerp(impactOnCharacter, Vector3.zero, Time.deltaTime * 5);
-            }
             break;
         case CharacterState.slide:
             // Slide velocity
@@ -157,6 +152,12 @@ public class Character : MonoBehaviour
             }
             break;
         }
+        
+        if (impactOnCharacter.magnitude > 0.2f){
+            _moveVelocity = impactOnCharacter * Time.deltaTime;
+            impactOnCharacter = Vector3.Lerp(impactOnCharacter, Vector3.zero, Time.deltaTime * 5);
+        }
+        
         // gravity
         if (isPlayer) {
             if (_cc.isGrounded == false){
@@ -168,6 +169,12 @@ public class Character : MonoBehaviour
             _moveVelocity += verticalVelocity * Vector3.up * Time.deltaTime;
             _cc.Move(_moveVelocity);
             _moveVelocity = Vector3.zero;
+        }
+        else {
+            if (currentState != CharacterState.Normal) {
+                _cc.Move(_moveVelocity);
+                _moveVelocity = Vector3.zero;
+            }
         }
     }
     
@@ -210,6 +217,7 @@ public class Character : MonoBehaviour
                 _animator.SetTrigger("Attack");
                 if (isPlayer){
                     attackStartTime =Time.time;
+                    RotateToCursor(); // rotar hacia donde está el cursor al momento de atacar
                 }
                 break;
             case CharacterState.dead:
@@ -217,6 +225,10 @@ public class Character : MonoBehaviour
                 _animator.SetTrigger("Dead");
                 StartCoroutine(MaterialDissolve());
                 DropItem();
+                if (!isPlayer) {
+                    SkinnedMeshRenderer mesh = GetComponentInChildren<SkinnedMeshRenderer>();
+                    mesh.gameObject.layer = 0;  // así se soluciona el error de que se mostraba la sombra del mesh del enemigo
+                }
                 break;
             case CharacterState.beingHit:
                 _animator.SetTrigger("beingHit");
@@ -268,6 +280,9 @@ public class Character : MonoBehaviour
         if (isPlayer) {
             SwitchStateTo(CharacterState.beingHit);
             AddImpact(attackerPos, 10f);
+        }
+        else {
+            AddImpact(attackerPos, 2.5f);
         }
     }
     
@@ -375,5 +390,27 @@ public class Character : MonoBehaviour
         
         _materialPropertyBlock.SetFloat("_enableDissolve", 0f);
         _skinnedMeshRenderer.SetPropertyBlock(_materialPropertyBlock);
+    }
+    
+    // Gizmo de donde se muestra el cursor
+    protected void OnDrawGizmos() {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hitResult;
+        
+        if (Physics.Raycast(ray, out hitResult, 1000, 1<< LayerMask.NameToLayer("CursorTest"))) {
+            Vector3 cursorPos = hitResult.point;
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(cursorPos, 1);
+        }
+    }
+    
+    public void RotateToCursor() {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hitResult;
+        
+        if (Physics.Raycast(ray, out hitResult, 1000, 1<< LayerMask.NameToLayer("CursorTest"))) {
+            Vector3 cursorPos = hitResult.point;
+            transform.rotation = Quaternion.LookRotation(cursorPos - transform.position, Vector3.up);
+        }
     }
 }
