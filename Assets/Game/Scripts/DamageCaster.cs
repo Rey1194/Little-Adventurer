@@ -24,6 +24,7 @@ public class DamageCaster : MonoBehaviour
                 targetCC.ApplyDamage(damage, transform.parent.position);
                 // llamar al sfx
                 SFXManager.instance.PlayAudio(4);
+                CameraShake.instance.ShakeCamera();
                 // instanciar el VFX en el punto de colisión contra el enemigo
                 PlayerVFXManager playerVFXManager = transform.parent.GetComponent<PlayerVFXManager>();
                 if (playerVFXManager != null) {

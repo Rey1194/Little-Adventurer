@@ -244,6 +244,7 @@ public class Character : MonoBehaviour
                 break;
             case CharacterState.slide:
                 _animator.SetTrigger("Slide");
+                SFXManager.instance.PlayAudio(8);
                 break;
             case CharacterState.spawn:
                 isInvincible = true;
