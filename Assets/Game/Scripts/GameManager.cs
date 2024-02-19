@@ -21,10 +21,12 @@ public class GameManager : MonoBehaviour
     }
     
     public void GameOver() {
+        buttonSFX.PlayButtonSound();
         UIManager.ShowGameOverUI();
     }
     
     public void GameIsFinished() {
+        buttonSFX.PlayButtonSound();   
         UIManager.ShowGameFinishedUI();
     }
 
